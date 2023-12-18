@@ -58,7 +58,6 @@ func main() {
 			"room": "room",
 			"position": "postion",
 			"departmentId": "-1",
-			"id": "-1",
 			"versionLock": 1,
 			"buildingId": "-1",
 			"username": "name",

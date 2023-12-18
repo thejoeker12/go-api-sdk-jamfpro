@@ -40,7 +40,7 @@ func main() {
 	}
 
 	// The ID of the computer prestage you want to update
-	prestageID := "YOUR_PRESTAGE_ID_HERE"
+	prestageID := "2"
 
 	// Define the updated information for the computer prestage
 	// Here we are just creating a new instance for demonstration purposes.

@@ -43,13 +43,13 @@ func main() {
 	// Call the GetLDAPServers function
 	ldapServers, err := client.GetJCDS2Files()
 	if err != nil {
-		log.Fatalf("Error retrieving LDAP servers: %v", err)
+		log.Fatalf("Error retrieving JCDS2 Files: %v", err)
 	}
 
 	// Process and print the response
 	ldapServersXML, err := xml.MarshalIndent(ldapServers, "", "    ") // Indent with 4 spaces
 	if err != nil {
-		log.Fatalf("Error marshaling LDAP servers data: %v", err)
+		log.Fatalf("Error marshaling JCDS2 Files data: %v", err)
 	}
-	fmt.Println("Fetched LDAP Servers List:", string(ldapServersXML))
+	fmt.Println("Fetched JCDS2 Files List:", string(ldapServersXML))
 }

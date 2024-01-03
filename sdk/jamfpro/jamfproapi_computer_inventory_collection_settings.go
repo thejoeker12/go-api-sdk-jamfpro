@@ -47,6 +47,7 @@ type ResourceComputerInventoryCollectionSettingsCustomPath struct {
 	Path  string `json:"path"`
 }
 
+// GetComputerInventoryCollectionSettings retrives all Computer Inventory Collection Settings
 func (c *Client) GetComputerInventoryCollectionSettings() (*ResourceComputerInventoryCollectionSettings, error) {
 	endpoint := uriComputerInventoryCollectionSettings
 

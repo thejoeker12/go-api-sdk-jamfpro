@@ -47,7 +47,7 @@ func main() {
 		EhcacheMaxBytesLocalHeap:   "1GB",
 		CacheUniqueId:              "24864549-94ea-4cc1-bb80-d7fb392c6556",
 		Elasticache:                false,
-		MemcachedEndpoints: []jamfpro.ResourceDataMemcachedEndpoint{
+		MemcachedEndpoints: []jamfpro.CacheSettingsSubsetMemcachedEndpoint{
 			{
 				HostName: "localhost",
 				Port:     11211,

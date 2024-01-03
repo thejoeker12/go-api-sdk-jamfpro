@@ -40,30 +40,30 @@ func main() {
 	}
 
 	// Define the payload for creating a new computer prestage
-	var prestage jamfpro.ComputerPrestagesItem
+	var prestage jamfpro.ResourceComputerPrestage
 	payload := `{
 		"mandatory": true,
 		"mdmRemovable": true,
-		"defaultPrestage": true,
+		"defaultPrestage": false,
 		"keepExistingSiteMembership": true,
 		"keepExistingLocationInformation": true,
 		"requireAuthentication": true,
 		"preventActivationLock": true,
-		"enableDeviceBasedActivationLock": true,
+		"enableDeviceBasedActivationLock": false,
 		"skipSetupItems": {
-			"newKey": true
+			"Biometric": true
 		},
 		"locationInformation": {
+			"username": "name",
+			"realname": "realName",
+			"phone": "123-456-7890",
 			"email": "test@jamf.com",
 			"room": "room",
 			"position": "postion",
-			"departmentId": "1",
+			"departmentId": "-1",
+			"buildingId": "-1",
 			"id": "-1",
-			"versionLock": 1,
-			"buildingId": "1",
-			"username": "name",
-			"realname": "realName",
-			"phone": "123-456-7890"
+			"versionLock": 1
 		},
 		"purchasingInformation": {
 			"leased": true,
@@ -84,7 +84,7 @@ func main() {
 		"autoAdvanceSetup": true,
 		"installProfilesDuringSetup": true,
 		"accountSettings": {
-			"payloadConfigured": false,
+			"payloadConfigured": true,
 			"localAdminAccountEnabled": false,
 			"hiddenAdminAccount": false,
 			"localUserManaged": false,
@@ -95,32 +95,28 @@ func main() {
 			"preventPrefillInfoFromModification": false,
 			"id": "1",
 			"adminUsername": "admin",
-			"adminPassword": "password"
+			"adminPassword": "password",
+			"prefillAccountFullName": "TestUser FullName",
+			"prefillAccountUserName": "UserName"
 		},
-		"displayName": "test",
+		"displayName": "Example Mobile Prestage Name",
 		"supportPhoneNumber": "5555555555",
-		"supportEmailAddress": "someemail@domain.com",
-		"department": "Oxbow",
+		"supportEmailAddress": "example@example.com",
+		"department": "",
 		"enrollmentSiteId": "-1",
 		"authenticationPrompt": "LDAP authentication prompt",
-		"deviceEnrollmentProgramInstanceId": "5",
-		"anchorCertificates": [
-			"xNE5HRgotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg=="
-		],
-		"enrollmentCustomizationId": "2",
+		"deviceEnrollmentProgramInstanceId": "1",
+		"anchorCertificates": [],
+		"enrollmentCustomizationId": "0",
 		"language": "en",
 		"region": "US",
-		"prestageInstalledProfileIds": [
-			"-1"
-		],
-		"customPackageDistributionPointId": "1",
-		"enableRecoveryLock": true,
-		"recoveryLockPasswordType": "MANUAL",
-		"rotateRecoveryLockPassword": true,
+		"customPackageDistributionPointId": "-1",
+    "enableRecoveryLock": true,
+    "recoveryLockPasswordType": "MANUAL",
+    "rotateRecoveryLockPassword": true,
+		"prestageInstalledProfileIds": [],
 		"recoveryLockPassword": "password123",
-		"customPackageIds": [
-			"-1"
-		]
+		"customPackageIds": []
 	}
 	`
 

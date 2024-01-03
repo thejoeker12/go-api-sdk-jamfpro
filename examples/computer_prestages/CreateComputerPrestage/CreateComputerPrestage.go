@@ -42,7 +42,7 @@ func main() {
 	// Define the payload for creating a new computer prestage
 	var prestage jamfpro.ResourceComputerPrestage
 	payload := `{
-		"mandatory": true,
+		"mandatory": false,
 		"mdmRemovable": true,
 		"defaultPrestage": false,
 		"keepExistingSiteMembership": true,

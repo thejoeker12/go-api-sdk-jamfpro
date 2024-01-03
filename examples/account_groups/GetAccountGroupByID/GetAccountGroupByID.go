@@ -39,13 +39,13 @@ func main() {
 		log.Fatalf("Failed to create Jamf Pro client: %v", err)
 	}
 
-	// Define the variable for the group name
-	groupName := "UpdatedGroupName" // Change this value as needed
+	// Define the variable for the group ID
+	groupID := 1 // Change this value as needed
 
-	// Call GetAccountGroupByName function
-	group, err := client.GetAccountGroupByName(groupName)
+	// Call GetGroupByID function
+	group, err := client.GetAccountGroupByID(groupID)
 	if err != nil {
-		log.Fatalf("Error fetching group by name: %v", err)
+		log.Fatalf("Error fetching group by ID: %v", err)
 	}
 
 	// Pretty print the group details

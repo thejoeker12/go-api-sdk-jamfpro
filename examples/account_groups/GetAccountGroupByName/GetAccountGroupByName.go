@@ -39,41 +39,19 @@ func main() {
 		log.Fatalf("Failed to create Jamf Pro client: %v", err)
 	}
 
-	// Assemble the request body for creating an account group
-	accountGroup := &jamfpro.ResponseAccountGroup{
-		Name:         "Test Group",
-		AccessLevel:  "Full Access",
-		PrivilegeSet: "Administrator",
-		Site: jamfpro.AccountSubsetSite{
-			ID:   -1,
-			Name: "None",
-		},
-		Privileges: jamfpro.AccountSubsetPrivileges{
-			JSSObjects:    []string{"string"},
-			JSSSettings:   []string{"string"},
-			JSSActions:    []string{"string"},
-			Recon:         []string{"string"},
-			CasperAdmin:   []string{"string"},
-			CasperRemote:  []string{"string"},
-			CasperImaging: []string{"string"},
-		},
-		Members: []struct{
-			{1, "Member One"},
-			{2, "Member Two"},
-		},
-	}
+	// Define the variable for the group name
+	groupName := "Test Group" // Change this value as needed
 
-	// Call CreateAccountGroupByID function
-	createdAccountGroup, err := client.CreateAccountGroup(accountGroup)
-
+	// Call GetAccountGroupByName function
+	group, err := client.GetAccountGroupByName(groupName)
 	if err != nil {
-		log.Fatalf("Error creating account group by ID: %v", err)
+		log.Fatalf("Error fetching group by name: %v", err)
 	}
 
-	// Pretty print the created account group details
-	accountGroupXML, err := xml.MarshalIndent(createdAccountGroup, "", "    ") // Indent with 4 spaces
+	// Pretty print the group details
+	accountsXML, err := xml.MarshalIndent(group, "", "    ") // Indent with 4 spaces
 	if err != nil {
-		log.Fatalf("Error marshaling account group data: %v", err)
+		log.Fatalf("Error marshaling group data: %v", err)
 	}
-	fmt.Println("Created Account Group Details:", string(accountGroupXML))
+	fmt.Println("Fetched Group Details:", string(accountsXML))
 }

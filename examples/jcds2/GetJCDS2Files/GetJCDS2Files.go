@@ -1,15 +1,17 @@
 package main
 
 import (
+	"encoding/xml"
 	"fmt"
 	"log"
 
-	"github.com/deploymenttheory/go-api-sdk-jamfpro/sdk/http_client" // Import http_client for logging
+	// Import http_client for logging
+	"github.com/deploymenttheory/go-api-sdk-jamfpro/sdk/http_client"
 	"github.com/deploymenttheory/go-api-sdk-jamfpro/sdk/jamfpro"
 )
 
 func main() {
-	// Define the path to the JSON configuration file
+	// Define the path to the JSON configuration file for OAuth credentials
 	configFilePath := "/Users/dafyddwatkins/GitHub/deploymenttheory/go-api-sdk-jamfpro/clientauth.json"
 
 	// Load the client OAuth credentials from the configuration file
@@ -38,18 +40,16 @@ func main() {
 		log.Fatalf("Failed to create Jamf Pro client: %v", err)
 	}
 
-	// Define sorting parameters
-	sortFilter := "name" // Example: "name" for sorting by name
-
-	// Fetch computer prestages using the V3 API
-	prestages, err := client.GetComputerPrestages(sortFilter)
+	// Call the GetLDAPServers function
+	ldapServers, err := client.GetJCDS2Files()
 	if err != nil {
-		log.Fatalf("Error fetching computer prestages: %v", err)
+		log.Fatalf("Error retrieving JCDS2 Files: %v", err)
 	}
 
-	// Print out the fetched computer prestages
-	for _, prestage := range prestages.Results {
-		fmt.Printf("Prestage Name: %s\n", prestage.DisplayName)
-		// Add more details to print as needed
+	// Process and print the response
+	ldapServersXML, err := xml.MarshalIndent(ldapServers, "", "    ") // Indent with 4 spaces
+	if err != nil {
+		log.Fatalf("Error marshaling JCDS2 Files data: %v", err)
 	}
+	fmt.Println("Fetched JCDS2 Files List:", string(ldapServersXML))
 }

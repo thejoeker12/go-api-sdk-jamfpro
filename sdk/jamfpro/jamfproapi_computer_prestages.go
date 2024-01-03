@@ -14,6 +14,8 @@ import (
 const uriComputerPrestagesV2 = "/api/v2/computer-prestages"
 const uriComputerPrestagesV3 = "/api/v3/computer-prestages"
 
+// Responses
+
 // ResponseDeviceScope represents the structure of the response for a specific computer prestage scope.
 type ResponseDeviceScope struct {
 	PrestageId  string                            `json:"prestageId"`
@@ -32,6 +34,8 @@ type ResponseComputerPrestagesList struct {
 	TotalCount *int                       `json:"totalCount"`
 	Results    []ResourceComputerPrestage `json:"results"`
 }
+
+// Resource
 
 type ResourceComputerPrestage struct {
 	DisplayName                       string                                      `json:"displayName"`
@@ -118,6 +122,8 @@ type ComputerPrestageSubsetAccountSettings struct {
 	PrefillAccountUserName                  string `json:"prefillAccountUserName"`
 	PreventPrefillInfoFromModification      bool   `json:"preventPrefillInfoFromModification"`
 }
+
+// CRUD
 
 // GetComputerPrestagesV3 retrieves all computer prestage information with optional sorting.
 func (c *Client) GetComputerPrestages(sort_filter string) (*ResponseComputerPrestagesList, error) {

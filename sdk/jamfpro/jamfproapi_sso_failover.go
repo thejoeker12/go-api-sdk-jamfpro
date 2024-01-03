@@ -9,14 +9,14 @@ import "fmt"
 
 const uriSSOFailover = "/api/v1/sso/failover"
 
-type ResponseSSOFailover struct {
+type ResourceSSOFailover struct {
 	FailoverURL    string `json:"failoverUrl"`
 	GenerationTime int64  `json:"generationTime"`
 }
 
 // GetSSOFailoverSettings fetches SSO failover settings from Jamf Pro
-func (c *Client) GetSSOFailoverSettings() (*ResponseSSOFailover, error) {
-	var out ResponseSSOFailover
+func (c *Client) GetSSOFailoverSettings() (*ResourceSSOFailover, error) {
+	var out ResourceSSOFailover
 
 	resp, err := c.HTTP.DoRequest("GET", uriSSOFailover, nil, &out)
 
@@ -33,8 +33,8 @@ func (c *Client) GetSSOFailoverSettings() (*ResponseSSOFailover, error) {
 }
 
 // UpdateFailoverUrl regenerates the failover URL by changing the failover key to a new one and returns the new failover settings.
-func (c *Client) UpdateFailoverUrl() (*ResponseSSOFailover, error) {
-	var out ResponseSSOFailover
+func (c *Client) UpdateFailoverUrl() (*ResourceSSOFailover, error) {
+	var out ResourceSSOFailover
 
 	endpoint := uriSSOFailover + "/generate"
 

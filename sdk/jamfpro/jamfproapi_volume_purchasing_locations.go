@@ -15,11 +15,15 @@ const (
 	volumePurchasingLocationsMaxPageSize = 2000                                  // Maximum number of items per page
 )
 
+// List
+
 // ResponseVolumePurchasingList represents the paginated response for volume purchasing locations.
 type ResponseVolumePurchasingList struct {
 	TotalCount int                        `json:"totalCount"`
 	Results    []VolumePurchasingLocation `json:"results"`
 }
+
+// Resource
 
 // VolumePurchasingLocation represents an individual volume purchasing location.
 type VolumePurchasingLocation struct {

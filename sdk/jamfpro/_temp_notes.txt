@@ -30,6 +30,13 @@ classicapi_departments.go
 classicapi_webhooks.go
 - Line: 182:218 why double catches for failed delete?
 
+General
+- could make attachments a shared resource? 
+
+jamfproapi_computer_inventory.go
+- Line 338 - could this be simplified using the > operator? 
+- Line 443 - same as above
+
 Complete To:
 classicapi_mobile_device_provisioning_profiles.go
 

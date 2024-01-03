@@ -1,3 +1,5 @@
+// Refactor Complete
+
 // classicapi_printers.go
 // Jamf Pro Classic Api - Printers
 // api reference: https://developer.jamf.com/jamf-pro/reference/printers
@@ -12,14 +14,20 @@ import (
 
 const uriPrinters = "/JSSResource/printers"
 
+// List
+
 // ResponsePrintersList represents the response for a list of printers.
 type ResponsePrintersList struct {
-	Size    int `xml:"size"`
-	Printer []struct {
-		ID   int    `xml:"id"`
-		Name string `xml:"name"`
-	} `xml:"printer"`
+	Size    int                `xml:"size"`
+	Printer []PrintersListItem `xml:"printer"`
 }
+
+type PrintersListItem struct {
+	ID   int    `xml:"id"`
+	Name string `xml:"name"`
+}
+
+// Resource
 
 // ResourcePrinter represents the detailed structure of a single printer.
 type ResourcePrinter struct {
@@ -39,6 +47,8 @@ type ResourcePrinter struct {
 	PPDContents string `xml:"ppd_contents"`
 }
 
+// CRUD
+
 // GetPrinters retrieves a serialized list of printers.
 func (c *Client) GetPrinters() (*ResponsePrintersList, error) {
 	endpoint := uriPrinters
@@ -46,7 +56,7 @@ func (c *Client) GetPrinters() (*ResponsePrintersList, error) {
 	var printers ResponsePrintersList
 	resp, err := c.HTTP.DoRequest("GET", endpoint, nil, &printers)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch printers: %v", err)
+		return nil, fmt.Errorf(errMsgFailedGet, "printers", err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -63,7 +73,7 @@ func (c *Client) GetPrinterByID(id int) (*ResourcePrinter, error) {
 	var printer ResourcePrinter
 	resp, err := c.HTTP.DoRequest("GET", endpoint, nil, &printer)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch printer by ID: %v", err)
+		return nil, fmt.Errorf(errMsgFailedGetByID, "printer", id, err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -80,7 +90,7 @@ func (c *Client) GetPrinterByName(name string) (*ResourcePrinter, error) {
 	var printer ResourcePrinter
 	resp, err := c.HTTP.DoRequest("GET", endpoint, nil, &printer)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch printer by name: %v", err)
+		return nil, fmt.Errorf(errMsgFailedGetByName, "printer", name, err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -91,7 +101,7 @@ func (c *Client) GetPrinterByName(name string) (*ResourcePrinter, error) {
 }
 
 // CreatePrinters creates a new printer on the Jamf Pro server.
-func (c *Client) CreatePrinters(printer *ResourcePrinter) (*ResourcePrinter, error) {
+func (c *Client) CreatePrinter(printer *ResourcePrinter) (*ResourcePrinter, error) {
 	endpoint := fmt.Sprintf("%s/id/0", uriPrinters)
 
 	// Wrap the printer with the desired XML name using an anonymous struct
@@ -105,7 +115,7 @@ func (c *Client) CreatePrinters(printer *ResourcePrinter) (*ResourcePrinter, err
 	var responsePrinter ResourcePrinter
 	resp, err := c.HTTP.DoRequest("POST", endpoint, &requestBody, &responsePrinter)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create printer: %v", err)
+		return nil, fmt.Errorf(errMsgFailedCreate, "printer", err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -130,7 +140,7 @@ func (c *Client) UpdatePrinterByID(id int, printer *ResourcePrinter) (*ResourceP
 	var responsePrinter ResourcePrinter
 	resp, err := c.HTTP.DoRequest("PUT", endpoint, &requestBody, &responsePrinter)
 	if err != nil {
-		return nil, fmt.Errorf("failed to update printer by ID: %v", err)
+		return nil, fmt.Errorf(errMsgFailedUpdateByID, "printer", id, err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -155,7 +165,7 @@ func (c *Client) UpdatePrinterByName(name string, printer *ResourcePrinter) (*Re
 	var responsePrinter ResourcePrinter
 	resp, err := c.HTTP.DoRequest("PUT", endpoint, &requestBody, &responsePrinter)
 	if err != nil {
-		return nil, fmt.Errorf("failed to update printer by name: %v", err)
+		return nil, fmt.Errorf(errMsgFailedUpdateByName, "printer", name, err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -171,7 +181,7 @@ func (c *Client) DeletePrinterByID(id int) error {
 
 	resp, err := c.HTTP.DoRequest("DELETE", endpoint, nil, nil)
 	if err != nil {
-		return fmt.Errorf("failed to delete printer by ID: %v", err)
+		return fmt.Errorf(errMsgFailedDeleteByID, "printer", id, err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -187,7 +197,7 @@ func (c *Client) DeletePrinterByName(name string) error {
 
 	resp, err := c.HTTP.DoRequest("DELETE", endpoint, nil, nil)
 	if err != nil {
-		return fmt.Errorf("failed to delete printer by name: %v", err)
+		return fmt.Errorf(errMsgFailedDeleteByName, "printer", name, err)
 	}
 
 	if resp != nil && resp.Body != nil {

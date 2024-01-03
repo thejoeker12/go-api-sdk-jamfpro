@@ -1,3 +1,5 @@
+// Refactor Complete
+
 // classicapi_smtp_server.go
 // Jamf Pro Classic Api - SMTP Server
 // api reference: https://developer.jamf.com/jamf-pro/reference/smtpserver
@@ -14,6 +16,8 @@ const uriSMTPServer = "/JSSResource/smtpserver"
 
 // Struct for the SMTP server settings response
 
+// Resource
+
 type ResourceSMTPServer struct {
 	Enabled               bool   `xml:"enabled"`
 	Host                  string `xml:"host"`
@@ -28,6 +32,8 @@ type ResourceSMTPServer struct {
 	SendFromEmail         string `xml:"send_from_email"`
 }
 
+// CRUD
+
 // GetSMTPServerInformation gets the SMTP server settings
 func (c *Client) GetSMTPServerInformation() (*ResourceSMTPServer, error) {
 	endpoint := uriSMTPServer
@@ -35,7 +41,7 @@ func (c *Client) GetSMTPServerInformation() (*ResourceSMTPServer, error) {
 	var smtpSettings ResourceSMTPServer
 	resp, err := c.HTTP.DoRequest("GET", endpoint, nil, &smtpSettings)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch SMTP server settings: %v", err)
+		return nil, fmt.Errorf(errMsgFailedGet, "smtp server information", err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -62,7 +68,7 @@ func (c *Client) UpdateSMTPServerInformation(settings *ResourceSMTPServer) error
 
 	resp, err := c.HTTP.DoRequest("PUT", endpoint, &requestBody, &handleResponse)
 	if err != nil {
-		return fmt.Errorf("failed to update SMTP server settings: %v", err)
+		return fmt.Errorf(errMsgFailedUpdate, "smtp server information", err)
 	}
 
 	if resp != nil && resp.Body != nil {

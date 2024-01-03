@@ -1,3 +1,10 @@
+// Refactor Complete
+
+/*
+Shared Resources in this Endpoint
+SharedResourceSite
+*/
+
 // classicapi_sites.go
 // Jamf Pro Classic Api - Sites
 // api reference: https://developer.jamf.com/jamf-pro/reference/sites
@@ -13,18 +20,16 @@ const uriSites = "/JSSResource/sites"
 
 // Structs for the sites
 
+// List
+
 type ResponseSitesList struct {
-	Size int `xml:"size"`
-	Site []struct {
-		ID   int    `xml:"id,omitempty"`
-		Name string `xml:"name,omitempty"`
-	} `xml:"site"`
+	Size int                  `xml:"size"`
+	Site []SharedResourceSite `xml:"site"`
 }
 
-type ResourceSite struct {
-	ID   int    `xml:"id"`
-	Name string `xml:"name"`
-}
+// No Resource as using a shared one: SharedResourceSite
+
+// CRUD
 
 // GetSites gets a list of all sites
 func (c *Client) GetSites() (*ResponseSitesList, error) {
@@ -33,7 +38,7 @@ func (c *Client) GetSites() (*ResponseSitesList, error) {
 	var sites ResponseSitesList
 	resp, err := c.HTTP.DoRequest("GET", endpoint, nil, &sites)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch all Sites: %v", err)
+		return nil, fmt.Errorf(errMsgFailedGet, "sites", err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -44,13 +49,13 @@ func (c *Client) GetSites() (*ResponseSitesList, error) {
 }
 
 // GetSiteByID retrieves a site by its ID.
-func (c *Client) GetSiteByID(id int) (*ResourceSite, error) {
+func (c *Client) GetSiteByID(id int) (*SharedResourceSite, error) {
 	endpoint := fmt.Sprintf("%s/id/%d", uriSites, id)
 
-	var site ResourceSite
+	var site SharedResourceSite
 	resp, err := c.HTTP.DoRequest("GET", endpoint, nil, &site)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch Site by ID: %v", err)
+		return nil, fmt.Errorf(errMsgFailedGetByID, "site", id, err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -61,13 +66,13 @@ func (c *Client) GetSiteByID(id int) (*ResourceSite, error) {
 }
 
 // GetSiteByName retrieves a site by its name.
-func (c *Client) GetSiteByName(name string) (*ResourceSite, error) {
+func (c *Client) GetSiteByName(name string) (*SharedResourceSite, error) {
 	endpoint := fmt.Sprintf("%s/name/%s", uriSites, name)
 
-	var site ResourceSite
+	var site SharedResourceSite
 	resp, err := c.HTTP.DoRequest("GET", endpoint, nil, &site)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch Site by name: %v", err)
+		return nil, fmt.Errorf(errMsgFailedGetByName, "site", name, err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -78,20 +83,20 @@ func (c *Client) GetSiteByName(name string) (*ResourceSite, error) {
 }
 
 // CreateSite creates a new site.
-func (c *Client) CreateSite(site *ResourceSite) (*ResourceSite, error) {
-	endpoint := fmt.Sprintf("%s/id/0", uriSites) // Using ID 0 for creation as per the pattern
+func (c *Client) CreateSite(site *SharedResourceSite) (*SharedResourceSite, error) {
+	endpoint := fmt.Sprintf("%s/id/0", uriSites)
 
 	requestBody := struct {
 		XMLName xml.Name `xml:"site"`
-		*ResourceSite
+		*SharedResourceSite
 	}{
-		ResourceSite: site,
+		SharedResourceSite: site,
 	}
 
-	var createdSite ResourceSite
+	var createdSite SharedResourceSite
 	resp, err := c.HTTP.DoRequest("POST", endpoint, &requestBody, &createdSite)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create Site: %v", err)
+		return nil, fmt.Errorf(errMsgFailedCreate, "site", err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -102,20 +107,20 @@ func (c *Client) CreateSite(site *ResourceSite) (*ResourceSite, error) {
 }
 
 // UpdateSiteByID updates an existing site by its ID.
-func (c *Client) UpdateSiteByID(id int, site *ResourceSite) (*ResourceSite, error) {
+func (c *Client) UpdateSiteByID(id int, site *SharedResourceSite) (*SharedResourceSite, error) {
 	endpoint := fmt.Sprintf("%s/id/%d", uriSites, id)
 
 	requestBody := struct {
 		XMLName xml.Name `xml:"site"`
-		*ResourceSite
+		*SharedResourceSite
 	}{
-		ResourceSite: site,
+		SharedResourceSite: site,
 	}
 
-	var updatedSite ResourceSite
+	var updatedSite SharedResourceSite
 	resp, err := c.HTTP.DoRequest("PUT", endpoint, &requestBody, &updatedSite)
 	if err != nil {
-		return nil, fmt.Errorf("failed to update Site by ID: %v", err)
+		return nil, fmt.Errorf(errMsgFailedUpdateByID, "site", id, err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -126,20 +131,20 @@ func (c *Client) UpdateSiteByID(id int, site *ResourceSite) (*ResourceSite, erro
 }
 
 // UpdateSiteByName updates an existing site by its name.
-func (c *Client) UpdateSiteByName(name string, site *ResourceSite) (*ResourceSite, error) {
+func (c *Client) UpdateSiteByName(name string, site *SharedResourceSite) (*SharedResourceSite, error) {
 	endpoint := fmt.Sprintf("%s/name/%s", uriSites, name)
 
 	requestBody := struct {
 		XMLName xml.Name `xml:"site"`
-		*ResourceSite
+		*SharedResourceSite
 	}{
-		ResourceSite: site,
+		SharedResourceSite: site,
 	}
 
-	var updatedSite ResourceSite
+	var updatedSite SharedResourceSite
 	resp, err := c.HTTP.DoRequest("PUT", endpoint, &requestBody, &updatedSite)
 	if err != nil {
-		return nil, fmt.Errorf("failed to update Site by name: %v", err)
+		return nil, fmt.Errorf(errMsgFailedUpdateByName, "site", name, err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -155,7 +160,7 @@ func (c *Client) DeleteSiteByID(id int) error {
 
 	resp, err := c.HTTP.DoRequest("DELETE", endpoint, nil, nil)
 	if err != nil {
-		return fmt.Errorf("failed to delete Site by ID: %v", err)
+		return fmt.Errorf(errMsgFailedDeleteByID, "site", id, err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -171,7 +176,7 @@ func (c *Client) DeleteSiteByName(name string) error {
 
 	resp, err := c.HTTP.DoRequest("DELETE", endpoint, nil, nil)
 	if err != nil {
-		return fmt.Errorf("failed to delete Site by name: %v", err)
+		return fmt.Errorf(errMsgFailedDeleteByName, "site", name, err)
 	}
 
 	if resp != nil && resp.Body != nil {

@@ -1,3 +1,5 @@
+// Refactor Complete
+
 // classicapi_removeable_mac_addresses.go
 // Jamf Pro Classic Api - Removable Mac Addresses
 // API reference: https://developer.jamf.com/jamf-pro/reference/findremovablemacaddresses
@@ -12,16 +14,22 @@ import (
 
 const uriRemovableMacAddresses = "/JSSResource/removablemacaddresses"
 
+// List
+
 // Structs for Removable MAC Addresses List
 type ResponseRemovableMacAddressesList struct {
 	Size         int                           `xml:"size"`
 	RemovableMac []ResourceRemovableMacAddress `xml:"removable_mac_address"`
 }
 
+// Resource
+
 type ResourceRemovableMacAddress struct {
 	ID   int    `xml:"id"`
 	Name string `xml:"name"`
 }
+
+// CRUD
 
 // GetRemovableMACAddresses retrieves a list of all removable MAC addresses.
 func (c *Client) GetRemovableMACAddresses() (*ResponseRemovableMacAddressesList, error) {
@@ -30,7 +38,7 @@ func (c *Client) GetRemovableMACAddresses() (*ResponseRemovableMacAddressesList,
 	var macAddressesList ResponseRemovableMacAddressesList
 	resp, err := c.HTTP.DoRequest("GET", endpoint, nil, &macAddressesList)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch all removable MAC addresses: %v", err)
+		return nil, fmt.Errorf(errMsgFailedGet, "removeable macaddresses", err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -47,7 +55,7 @@ func (c *Client) GetRemovableMACAddressByID(id int) (*ResourceRemovableMacAddres
 	var macAddressDetails ResourceRemovableMacAddress
 	resp, err := c.HTTP.DoRequest("GET", endpoint, nil, &macAddressDetails)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch removable MAC address by ID: %v", err)
+		return nil, fmt.Errorf(errMsgFailedGetByID, "removeable macaddress", id, err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -64,7 +72,7 @@ func (c *Client) GetRemovableMACAddressByName(name string) (*ResourceRemovableMa
 	var macAddressDetails ResourceRemovableMacAddress
 	resp, err := c.HTTP.DoRequest("GET", endpoint, nil, &macAddressDetails)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch removable MAC address by name: %v", err)
+		return nil, fmt.Errorf(errMsgFailedGetByName, "removeable macaddress", name, err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -89,7 +97,7 @@ func (c *Client) CreateRemovableMACAddress(macAddress *ResourceRemovableMacAddre
 	var responseMacAddress ResourceRemovableMacAddress
 	resp, err := c.HTTP.DoRequest("POST", endpoint, &requestBody, &responseMacAddress)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create removable MAC address: %v", err)
+		return nil, fmt.Errorf(errMsgFailedCreate, "removeable macaddress", err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -113,7 +121,7 @@ func (c *Client) UpdateRemovableMACAddressByID(id int, macAddress *ResourceRemov
 	var responseMacAddress ResourceRemovableMacAddress
 	resp, err := c.HTTP.DoRequest("PUT", endpoint, &requestBody, &responseMacAddress)
 	if err != nil {
-		return nil, fmt.Errorf("failed to update removable MAC address by ID: %v", err)
+		return nil, fmt.Errorf(errMsgFailedUpdateByID, "removeable macaddress", id, err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -137,7 +145,7 @@ func (c *Client) UpdateRemovableMACAddressByName(name string, macAddress *Resour
 	var responseMacAddress ResourceRemovableMacAddress
 	resp, err := c.HTTP.DoRequest("PUT", endpoint, &requestBody, &responseMacAddress)
 	if err != nil {
-		return nil, fmt.Errorf("failed to update removable MAC address by name: %v", err)
+		return nil, fmt.Errorf(errMsgFailedUpdateByName, "removeable macaddress", name, err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -153,7 +161,7 @@ func (c *Client) DeleteRemovableMACAddressByID(id int) error {
 
 	resp, err := c.HTTP.DoRequest("DELETE", endpoint, nil, nil)
 	if err != nil {
-		return fmt.Errorf("failed to delete removable MAC address by ID: %v", err)
+		return fmt.Errorf(errMsgFailedDeleteByID, "removeable macaddress", id, err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -169,7 +177,7 @@ func (c *Client) DeleteRemovableMACAddressByName(name string) error {
 
 	resp, err := c.HTTP.DoRequest("DELETE", endpoint, nil, nil)
 	if err != nil {
-		return fmt.Errorf("failed to delete removable MAC address by name: %v", err)
+		return fmt.Errorf(errMsgFailedDeleteByName, "removeable macaddress", name, err)
 	}
 
 	if resp != nil && resp.Body != nil {

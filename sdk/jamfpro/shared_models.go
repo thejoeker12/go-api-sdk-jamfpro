@@ -28,7 +28,7 @@ type SharedResourceSelfServiceCategory struct {
 	Priority int    `xml:"priority,omitempty"`
 }
 
-// Advanced Search DisplayField
+// DisplayField
 
 type SharedAdvancedSearchContainerDisplayField struct {
 	Size         int                                    `xml:"size"`

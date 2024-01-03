@@ -1,3 +1,11 @@
+// Refactor Complete
+
+/*
+Shared Resources in this Endpoint
+SharedResourceSite
+SharedSubsetCriteria
+*/
+
 // classicapi_usergroups.go
 // Jamf Pro Classic Api - usergroups
 // api reference: https://developer.jamf.com/jamf-pro/reference/usergroups
@@ -12,49 +20,48 @@ import (
 
 const uriUserGroups = "/JSSResource/usergroups"
 
+// List
+
 // ResponseUserGroupsList represents the structure for a list of user groups.
 type ResponseUserGroupsList struct {
-	Size      int `xml:"size"`
-	UserGroup []struct {
-		ID               int    `xml:"id"`
-		Name             string `xml:"name"`
-		IsSmart          bool   `xml:"is_smart"`
-		IsNotifyOnChange bool   `xml:"is_notify_on_change"`
-	} `xml:"user_group"`
+	Size      int                  `xml:"size"`
+	UserGroup []UserGroupsListItem `xml:"user_group"`
 }
 
-// ResourceUserGroup represents the detailed information of a user group.
-type ResourceUserGroup struct {
+type UserGroupsListItem struct {
 	ID               int    `xml:"id"`
 	Name             string `xml:"name"`
 	IsSmart          bool   `xml:"is_smart"`
 	IsNotifyOnChange bool   `xml:"is_notify_on_change"`
-	Site             struct {
-		ID   int    `xml:"id"`
-		Name string `xml:"name"`
-	} `xml:"site"`
-	Criteria []struct {
-		Name         string `xml:"name"`
-		Priority     int    `xml:"priority"`
-		AndOr        string `xml:"and_or"`
-		SearchType   string `xml:"search_type"`
-		Value        string `xml:"value"`
-		OpeningParen bool   `xml:"opening_paren,omitempty"`
-		ClosingParen bool   `xml:"closing_paren,omitempty"`
-	} `xml:"criteria>criterion"`
-	Users         []UserGroupUserItem `xml:"users>user"`
-	UserAdditions []UserGroupUserItem `xml:"user_additions>user"`
-	UserDeletions []UserGroupUserItem `xml:"user_deletions>user"`
 }
 
+// Resource
+
+// ResourceUserGroup represents the detailed information of a user group.
+type ResourceUserGroup struct {
+	ID               int                       `xml:"id"`
+	Name             string                    `xml:"name"`
+	IsSmart          bool                      `xml:"is_smart"`
+	IsNotifyOnChange bool                      `xml:"is_notify_on_change"`
+	Site             SharedResourceSite        `xml:"site"`
+	Criteria         []SharedSubsetCriteria    `xml:"criteria>criterion"`
+	Users            []UserGroupSubsetUserItem `xml:"users>user"`
+	UserAdditions    []UserGroupSubsetUserItem `xml:"user_additions>user"`
+	UserDeletions    []UserGroupSubsetUserItem `xml:"user_deletions>user"`
+}
+
+// Shared
+
 // UserGroupUserItem represents a user of a user group.
-type UserGroupUserItem struct {
+type UserGroupSubsetUserItem struct {
 	ID           int    `xml:"id"`
 	Username     string `xml:"username"`
 	FullName     string `xml:"full_name"`
 	PhoneNumber  string `xml:"phone_number,omitempty"`
 	EmailAddress string `xml:"email_address"`
 }
+
+// CRUD
 
 // GetUserGroups retrieves a list of all user groups.
 func (c *Client) GetUserGroups() (*ResponseUserGroupsList, error) {
@@ -63,7 +70,7 @@ func (c *Client) GetUserGroups() (*ResponseUserGroupsList, error) {
 	var userGroupsList ResponseUserGroupsList
 	resp, err := c.HTTP.DoRequest("GET", endpoint, nil, &userGroupsList)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch user groups: %v", err)
+		return nil, fmt.Errorf(errMsgFailedGet, "user groups", err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -74,13 +81,13 @@ func (c *Client) GetUserGroups() (*ResponseUserGroupsList, error) {
 }
 
 // GetUserGroupsByID retrieves the details of a user group by its ID.
-func (c *Client) GetUserGroupsByID(id int) (*ResourceUserGroup, error) {
+func (c *Client) GetUserGroupByID(id int) (*ResourceUserGroup, error) {
 	endpoint := fmt.Sprintf("%s/id/%d", uriUserGroups, id)
 
 	var userGroupDetail ResourceUserGroup
 	resp, err := c.HTTP.DoRequest("GET", endpoint, nil, &userGroupDetail)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch user group by ID: %v", err)
+		return nil, fmt.Errorf(errMsgFailedGetByID, "user group", id, err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -91,13 +98,13 @@ func (c *Client) GetUserGroupsByID(id int) (*ResourceUserGroup, error) {
 }
 
 // GetUserGroupsByName retrieves the details of a user group by its name.
-func (c *Client) GetUserGroupsByName(name string) (*ResourceUserGroup, error) {
+func (c *Client) GetUserGroupByName(name string) (*ResourceUserGroup, error) {
 	endpoint := fmt.Sprintf("%s/name/%s", uriUserGroups, name)
 
 	var userGroupDetail ResourceUserGroup
 	resp, err := c.HTTP.DoRequest("GET", endpoint, nil, &userGroupDetail)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch user group by name: %v", err)
+		return nil, fmt.Errorf(errMsgFailedGetByName, "user group", name, err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -109,7 +116,7 @@ func (c *Client) GetUserGroupsByName(name string) (*ResourceUserGroup, error) {
 
 // CreateUserGroup creates a new user group.
 func (c *Client) CreateUserGroup(userGroup *ResourceUserGroup) (*ResourceUserGroup, error) {
-	endpoint := fmt.Sprintf("%s/id/0", uriUserGroups) // Using ID 0 for creation
+	endpoint := fmt.Sprintf("%s/id/0", uriUserGroups)
 
 	requestBody := struct {
 		XMLName xml.Name `xml:"user_group"`
@@ -121,7 +128,7 @@ func (c *Client) CreateUserGroup(userGroup *ResourceUserGroup) (*ResourceUserGro
 	var createdUserGroup ResourceUserGroup
 	resp, err := c.HTTP.DoRequest("POST", endpoint, &requestBody, &createdUserGroup)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create user group: %v", err)
+		return nil, fmt.Errorf(errMsgFailedCreate, "user group", err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -145,7 +152,7 @@ func (c *Client) UpdateUserGroupByID(id int, userGroup *ResourceUserGroup) (*Res
 	var updatedUserGroup ResourceUserGroup
 	resp, err := c.HTTP.DoRequest("PUT", endpoint, &requestBody, &updatedUserGroup)
 	if err != nil {
-		return nil, fmt.Errorf("failed to update user group by ID: %v", err)
+		return nil, fmt.Errorf(errMsgFailedUpdateByID, "user group", id, err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -169,7 +176,7 @@ func (c *Client) UpdateUserGroupByName(name string, userGroup *ResourceUserGroup
 	var updatedUserGroup ResourceUserGroup
 	resp, err := c.HTTP.DoRequest("PUT", endpoint, &requestBody, &updatedUserGroup)
 	if err != nil {
-		return nil, fmt.Errorf("failed to update user group by name: %v", err)
+		return nil, fmt.Errorf(errMsgFailedUpdateByName, "user group", name, err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -184,7 +191,7 @@ func (c *Client) DeleteUserGroupByID(id int) error {
 	endpoint := fmt.Sprintf("%s/id/%d", uriUserGroups, id)
 	resp, err := c.HTTP.DoRequest("DELETE", endpoint, nil, nil)
 	if err != nil {
-		return fmt.Errorf("failed to delete user group by ID: %v", err)
+		return fmt.Errorf(errMsgFailedDeleteByID, "user group", id, err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -199,7 +206,7 @@ func (c *Client) DeleteUserGroupByName(name string) error {
 	endpoint := fmt.Sprintf("%s/name/%s", uriUserGroups, name)
 	resp, err := c.HTTP.DoRequest("DELETE", endpoint, nil, nil)
 	if err != nil {
-		return fmt.Errorf("failed to delete user group by name: %v", err)
+		return fmt.Errorf(errMsgFailedDeleteByName, "user group", name, err)
 	}
 
 	if resp != nil && resp.Body != nil {

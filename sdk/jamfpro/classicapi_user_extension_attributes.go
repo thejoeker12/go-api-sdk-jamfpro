@@ -1,3 +1,5 @@
+// Refactor Complete
+
 // classicapi_user_extension_attributes.go
 // Jamf Pro Classic Api - User Extension Attributes
 // api reference: https://developer.jamf.com/jamf-pro/reference/userextensionattributes
@@ -14,26 +16,38 @@ const uriUserExtensionAttributes = "/JSSResource/userextensionattributes"
 
 // Structs for User Extension Attributes
 
+// List
+
 type ResponseUserExtensionAttributesList struct {
-	XMLName                 xml.Name `xml:"user_extension_attributes"`
-	Size                    int      `xml:"size"`
-	UserExtensionAttributes []struct {
-		ID   int    `xml:"id"`
-		Name string `xml:"name"`
-	} `xml:"user_extension_attribute"`
+	XMLName                 xml.Name                          `xml:"user_extension_attributes"`
+	Size                    int                               `xml:"size"`
+	UserExtensionAttributes []UserExtensionAttributesListItem `xml:"user_extension_attribute"`
 }
+
+type UserExtensionAttributesListItem struct {
+	ID   int    `xml:"id"`
+	Name string `xml:"name"`
+}
+
+// Resource
 
 // ResponseUserExtensionAttributerepresents a single user extension attribute.
 type ResourceUserExtensionAttribute struct {
-	XMLName     xml.Name `xml:"user_extension_attribute"`
-	ID          int      `xml:"id,omitempty"`
-	Name        string   `xml:"name"`
-	Description string   `xml:"description"`
-	DataType    string   `xml:"data_type"`
-	InputType   struct {
-		Type string `xml:"type"`
-	} `xml:"input_type"`
+	XMLName     xml.Name                                      `xml:"user_extension_attribute"`
+	ID          int                                           `xml:"id,omitempty"`
+	Name        string                                        `xml:"name"`
+	Description string                                        `xml:"description"`
+	DataType    string                                        `xml:"data_type"`
+	InputType   ResourceUserExtensionAttributeSubsetInputType `xml:"input_type"`
 }
+
+// Subsets
+
+type ResourceUserExtensionAttributeSubsetInputType struct {
+	Type string `xml:"type"`
+}
+
+// CRUD
 
 // GetUserExtensionAttributes retrieves a list of all user extension attributes.
 func (c *Client) GetUserExtensionAttributes() (*ResponseUserExtensionAttributesList, error) {
@@ -42,7 +56,7 @@ func (c *Client) GetUserExtensionAttributes() (*ResponseUserExtensionAttributesL
 	var extAttributes ResponseUserExtensionAttributesList
 	resp, err := c.HTTP.DoRequest("GET", endpoint, nil, &extAttributes)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch user extension attributes: %v", err)
+		return nil, fmt.Errorf(errMsgFailedGet, "user extension attributes", err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -59,7 +73,7 @@ func (c *Client) GetUserExtensionAttributeByID(id int) (*ResourceUserExtensionAt
 	var userExtAttr ResourceUserExtensionAttribute
 	resp, err := c.HTTP.DoRequest("GET", endpoint, nil, &userExtAttr)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch user extension attribute by ID: %v", err)
+		return nil, fmt.Errorf(errMsgFailedGetByID, "user extension attribute", id, err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -76,7 +90,7 @@ func (c *Client) GetUserExtensionAttributeByName(name string) (*ResourceUserExte
 	var userExtAttr ResourceUserExtensionAttribute
 	resp, err := c.HTTP.DoRequest("GET", endpoint, nil, &userExtAttr)
 	if err != nil {
-		return nil, fmt.Errorf("failed to fetch user extension attribute by name: %v", err)
+		return nil, fmt.Errorf(errMsgFailedGetByName, "user extension attribute", name, err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -88,7 +102,7 @@ func (c *Client) GetUserExtensionAttributeByName(name string) (*ResourceUserExte
 
 // CreateUserExtensionAttribute creates a new user extension attribute.
 func (c *Client) CreateUserExtensionAttribute(attribute *ResourceUserExtensionAttribute) (*ResourceUserExtensionAttribute, error) {
-	endpoint := fmt.Sprintf("%s/id/0", uriUserExtensionAttributes) // Using ID 0 for creation
+	endpoint := fmt.Sprintf("%s/id/0", uriUserExtensionAttributes)
 
 	requestBody := struct {
 		XMLName xml.Name `xml:"user_extension_attribute"`
@@ -100,7 +114,7 @@ func (c *Client) CreateUserExtensionAttribute(attribute *ResourceUserExtensionAt
 	var createdAttribute ResourceUserExtensionAttribute
 	resp, err := c.HTTP.DoRequest("POST", endpoint, &requestBody, &createdAttribute)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create user extension attribute: %v", err)
+		return nil, fmt.Errorf(errMsgFailedCreate, "user extension attribute", err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -124,7 +138,7 @@ func (c *Client) UpdateUserExtensionAttributeByID(id int, attribute *ResourceUse
 	var updatedAttribute ResourceUserExtensionAttribute
 	resp, err := c.HTTP.DoRequest("PUT", endpoint, &requestBody, &updatedAttribute)
 	if err != nil {
-		return nil, fmt.Errorf("failed to update user extension attribute by ID: %v", err)
+		return nil, fmt.Errorf(errMsgFailedUpdateByID, "user extension attribute", id, err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -148,7 +162,7 @@ func (c *Client) UpdateUserExtensionAttributeByName(name string, attribute *Reso
 	var updatedAttribute ResourceUserExtensionAttribute
 	resp, err := c.HTTP.DoRequest("PUT", endpoint, &requestBody, &updatedAttribute)
 	if err != nil {
-		return nil, fmt.Errorf("failed to update user extension attribute by name: %v", err)
+		return nil, fmt.Errorf(errMsgFailedUpdateByName, "user extension attribute", name, err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -164,7 +178,7 @@ func (c *Client) DeleteUserExtensionAttributeByID(id int) error {
 
 	resp, err := c.HTTP.DoRequest("DELETE", endpoint, nil, nil)
 	if err != nil {
-		return fmt.Errorf("failed to delete user extension attribute by ID: %v", err)
+		return fmt.Errorf(errMsgFailedDeleteByID, "user extension attribute", id, err)
 	}
 
 	if resp != nil && resp.Body != nil {
@@ -180,7 +194,7 @@ func (c *Client) DeleteUserExtensionAttributeByName(name string) error {
 
 	resp, err := c.HTTP.DoRequest("DELETE", endpoint, nil, nil)
 	if err != nil {
-		return fmt.Errorf("failed to delete user extension attribute by name: %v", err)
+		return fmt.Errorf(errMsgFailedDeleteByName, "user extension attribute", name, err)
 	}
 
 	if resp != nil && resp.Body != nil {

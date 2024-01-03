@@ -10,12 +10,17 @@ const (
 	errMsgFailedGet            = "failed to get %s, error: %v"
 	errMsgFailedGetByID        = "failed to get %s by id: %v, error: %v"
 	errMsgFailedGetByName      = "failed to get %s by name: %s, error: %v"
+	errMsgFailedGetByCategory  = "failed to get %s by category: %s, error: %v"
+	errMsgFailedGetByType      = "failed to get %s by type: %s, error: %v"
+	errMsgFailedGetByEmail     = "failed to get %s by Email: %s, error: %v"
 	errMsgFailedCreate         = "failed to create %s, error: %v"
 	errMsgFailedUpdate         = "failed to update %s, error: %v"
 	errMsgFailedUpdateByID     = "failed to update %s by id: %v, error: %v"
 	errMsgFailedUpdateByName   = "failed to update %s by name: %s, error: %v"
+	errMsgFailedUpdateByEmail  = "failed to Update %s by Email: %s, error: %v"
 	errMsgFailedDeleteByID     = "failed to delete %s by id: %v, error: %v"
 	errMsgFailedDeleteByName   = "failed to delete %s by name: %s, error: %v"
+	errMsgFailedDeleteByEmail  = "failed to delete %s by Email: %s, error: %v"
 	errMsgFailedDeleteMultiple = "failed to delete multiple %s, by ids: %v, error: %v"
 
 	// Mapstructure - type: string, error: any
